@@ -105,5 +105,9 @@ func (a *App) CheckPassword(ctx context.Context, userName, password string) (boo
 		}
 	}
 
+	if !user.Admin {
+		return false, errors.New("user is not an admin")
+	}
+
 	return true, nil
 }

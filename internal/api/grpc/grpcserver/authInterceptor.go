@@ -14,9 +14,9 @@ import (
 //nolint:lll
 func (s Server) BasicAuthInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
 	authorizedMethods := map[string]struct{}{
-		"/pb.UserService/CreateUser": {},
-		"/pb.UserService/UpdateUser": {},
-		"/pb.UserService/DeleteUser": {},
+		"/user.UserService/CreateUser": {},
+		"/user.UserService/UpdateUser": {},
+		"/user.UserService/DeleteUser": {},
 	}
 
 	_, exist := authorizedMethods[info.FullMethod]
@@ -34,7 +34,13 @@ func (s Server) BasicAuthInterceptor(ctx context.Context, req interface{}, info 
 			return nil, status.Error(codes.Unauthenticated, "missing Authorization header")
 		}
 
-		credentials, err := base64.StdEncoding.DecodeString(authHeader[0])
+		header, ok := strings.CutPrefix(authHeader[0], "Basic ")
+		if !ok {
+			s.logger.Error("BasicAuthInterceptor: invalid Authorization header", nil)
+			return nil, status.Error(codes.Unauthenticated, "invalid Authorization header")
+		}
+
+		credentials, err := base64.StdEncoding.DecodeString(header)
 		if err != nil {
 			s.logger.Error("BasicAuthInterceptor: invalid base64 encoding", nil)
 			return nil, status.Error(codes.Unauthenticated, "invalid base64 encoding")

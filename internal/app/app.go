@@ -36,6 +36,6 @@ type StorageInterface interface {
 	GetOneUserByUsername(ctx context.Context, userName string) (*models.User, error)
 }
 
-func NewApp(logger Logger, storage StorageInterface, validator Validator) *App {
-	return &App{logger: logger, storage: storage, validator: validator}
+func NewApp(logger Logger, storage StorageInterface, validator Validator, secretKey string) *App {
+	return &App{logger: logger, storage: storage, validator: validator, SecretKey: secretKey}
 }

@@ -6,11 +6,11 @@ option go_package = "./;pb";
 package user;
 
 service UserService {
-  rpc CreateUser(ChangeUserRequest) returns (UserResponse) {}  //admin only
+  rpc CreateUser(CreateUserRequest) returns (UserResponse) {}  //admin only
   rpc UpdateUser(ChangeUserRequest) returns (google.protobuf.Empty) {} //admin only
   rpc DeleteUser(DeleteUserRequest) returns (DeleteUserResponse) {} //admin only
   rpc GetUsers(GetUsersRequest) returns (GetUsersResponse) {}
-  rpc GetOneUserById(GetUserByIdRequest) returns (UserResponse) {}
+  rpc GetOneUserByID(GetUserByIdRequest) returns (UserResponse) {}
   rpc GetOneUserByUsername(GetUserByUsernameRequest) returns (UserResponse) {}
 }
 
@@ -28,6 +28,13 @@ message ChangeUserRequest {
   string username = 3;
   string password = 4;
   bool admin = 5;
+}
+
+message CreateUserRequest {
+  string email = 1;
+  string username = 2;
+  string password = 3;
+  bool admin = 4;
 }
 
 message GetUsersRequest {

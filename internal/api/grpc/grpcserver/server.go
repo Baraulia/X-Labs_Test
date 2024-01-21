@@ -24,7 +24,7 @@ func NewServer(service api.ServiceInterface, logger app.Logger) *Server {
 	}
 }
 
-func (s Server) CreateUser(ctx context.Context, req *pb.ChangeUserRequest) (*pb.UserResponse, error) {
+func (s Server) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*pb.UserResponse, error) {
 	result, err := s.service.CreateUser(ctx, &models.User{
 		Email:    req.Email,
 		UserName: req.Username,

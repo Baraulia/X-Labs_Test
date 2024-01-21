@@ -58,7 +58,7 @@ func main() {
 
 	validator := validation.New()
 
-	service := app.NewApp(logg, storage, validator)
+	service := app.NewApp(logg, storage, validator, secretKey)
 	grpcService := grpcserver.NewServer(service, logg)
 
 	server := grpc.NewServer(grpc.UnaryInterceptor(

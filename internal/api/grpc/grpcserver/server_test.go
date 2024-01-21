@@ -23,7 +23,7 @@ func TestCreateUser(t *testing.T) {
 
 	testTable := []struct {
 		name           string
-		inputData      *pb.ChangeUserRequest
+		inputData      *pb.CreateUserRequest
 		convertData    *models.User
 		expectedResult *pb.UserResponse
 		mockBehavior   mockBehavior
@@ -31,7 +31,7 @@ func TestCreateUser(t *testing.T) {
 	}{
 		{
 			name: "successful",
-			inputData: &pb.ChangeUserRequest{
+			inputData: &pb.CreateUserRequest{
 				Email:    "test@gmail.com",
 				Username: "testUserName",
 				Password: "test",
@@ -65,7 +65,7 @@ func TestCreateUser(t *testing.T) {
 		},
 		{
 			name: "error from service",
-			inputData: &pb.ChangeUserRequest{
+			inputData: &pb.CreateUserRequest{
 				Email:    "test&gmail.com",
 				Username: "testUserName",
 				Password: "test",

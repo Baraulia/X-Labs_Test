@@ -75,7 +75,7 @@ func TestCreateUser(t *testing.T) {
 			defer c.Finish()
 			storage := mocks.NewMockStorageInterface(c)
 			testCase.mockBehavior(storage, &testCase.inputData)
-			app := NewApp(logg, storage, validator)
+			app := NewApp(logg, storage, validator, "")
 
 			_, err = app.CreateUser(ctx, &testCase.inputData)
 			if testCase.expectedError {
@@ -142,7 +142,7 @@ func TestUpdateUser(t *testing.T) {
 			defer c.Finish()
 			storage := mocks.NewMockStorageInterface(c)
 			testCase.mockBehavior(storage, testCase.inputData, testCase.inputID)
-			app := NewApp(logg, storage, validator)
+			app := NewApp(logg, storage, validator, "")
 
 			err = app.UpdateUser(ctx, testCase.inputData, testCase.inputID)
 			if testCase.expectedError {
@@ -196,7 +196,7 @@ func TestGetOneUserById(t *testing.T) {
 			defer c.Finish()
 			storage := mocks.NewMockStorageInterface(c)
 			testCase.mockBehavior(storage, testCase.inputID)
-			app := NewApp(logg, storage, validator)
+			app := NewApp(logg, storage, validator, "")
 
 			_, err = app.GetOneUserByID(ctx, testCase.inputID)
 			if testCase.expectedError {
@@ -244,7 +244,7 @@ func TestDeleteUser(t *testing.T) {
 			defer c.Finish()
 			storage := mocks.NewMockStorageInterface(c)
 			testCase.mockBehavior(storage, testCase.inputID)
-			app := NewApp(logg, storage, validator)
+			app := NewApp(logg, storage, validator, "")
 
 			err = app.DeleteUser(ctx, testCase.inputID)
 			if testCase.expectedError {

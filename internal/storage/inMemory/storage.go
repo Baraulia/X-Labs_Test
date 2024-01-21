@@ -39,6 +39,7 @@ func (us *UserStorage) InitAdmin(initAdminName, initAdminPassword, secretKey str
 	newUUID := uuid.New().String()
 
 	us.users[newUUID] = &models.User{
+		ID:       newUUID,
 		Email:    "admin@gmail.com",
 		UserName: initAdminName,
 		Password: string(hashedPassword),
@@ -142,7 +143,7 @@ func (us *UserStorage) UpdateUser(ctx context.Context, userDTO models.UpdateUser
 	}
 
 	if userDTO.Email != nil {
-		if existingID, ex := us.indexByEmail[user.Email]; ex {
+		if existingID, ex := us.indexByEmail[*userDTO.Email]; ex {
 			us.logger.Error(
 				"user with a such email already exists", map[string]interface{}{"email": user.Email, "id": existingID})
 			return fmt.Errorf("user with email %s already exists (ID: %s)", user.Email, existingID)
