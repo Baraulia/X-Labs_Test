@@ -207,7 +207,13 @@ func (us *UserStorage) GetOneUserByID(ctx context.Context, userID string) (*mode
 	default:
 	}
 
-	return us.users[userID], nil
+	user, ok := us.users[userID]
+	if !ok {
+		us.logger.Error("user does not exist", map[string]interface{}{"id": userID})
+		return nil, fmt.Errorf("user with id: %s does not exist", userID)
+	}
+
+	return user, nil
 }
 
 func (us *UserStorage) GetOneUserByUsername(ctx context.Context, userName string) (*models.User, error) {

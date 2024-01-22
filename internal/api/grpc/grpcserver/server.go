@@ -9,6 +9,8 @@ import (
 	"github.com/Baraulia/X-Labs_Test/internal/app"
 	"github.com/Baraulia/X-Labs_Test/internal/models"
 	"github.com/golang/protobuf/ptypes/empty"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 type Server struct {
@@ -25,6 +27,11 @@ func NewServer(service api.ServiceInterface, logger app.Logger) *Server {
 }
 
 func (s Server) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*pb.UserResponse, error) {
+	isAdmin, ok := ctx.Value(contextValue("isAdmin")).(bool)
+	if !isAdmin || !ok {
+		return nil, status.Error(codes.PermissionDenied, "only admin has access to call this method")
+	}
+
 	result, err := s.service.CreateUser(ctx, &models.User{
 		Email:    req.Email,
 		UserName: req.Username,
@@ -39,6 +46,11 @@ func (s Server) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*pb.
 }
 
 func (s Server) UpdateUser(ctx context.Context, req *pb.ChangeUserRequest) (*empty.Empty, error) {
+	isAdmin, ok := ctx.Value(contextValue("isAdmin")).(bool)
+	if !isAdmin || !ok {
+		return nil, status.Error(codes.PermissionDenied, "only admin has access to call this method")
+	}
+
 	var updateUserDTO models.UpdateUserDTO
 
 	if req.Email != "" {
@@ -58,10 +70,15 @@ func (s Server) UpdateUser(ctx context.Context, req *pb.ChangeUserRequest) (*emp
 		return nil, err
 	}
 
-	return nil, nil
+	return &empty.Empty{}, nil
 }
 
 func (s Server) DeleteUser(ctx context.Context, req *pb.DeleteUserRequest) (*pb.DeleteUserResponse, error) {
+	isAdmin, ok := ctx.Value(contextValue("isAdmin")).(bool)
+	if !isAdmin || !ok {
+		return nil, status.Error(codes.PermissionDenied, "only admin has access to call this method")
+	}
+
 	err := s.service.DeleteUser(ctx, req.Id)
 	if err != nil {
 		return &pb.DeleteUserResponse{Success: false}, err

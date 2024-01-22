@@ -18,13 +18,15 @@ func TestCreateUser(t *testing.T) {
 	type mockBehavior func(s *serviceMocks.MockServiceInterface, dto *models.User)
 	logg, err := logger.GetLogger("INFO")
 	require.NoError(t, err)
-	ctx := context.Background()
+	ctx := context.WithValue(context.Background(), contextValue("isAdmin"), true)
+	notAdminCtx := context.WithValue(context.Background(), contextValue("isAdmin"), false)
 	newUUID := uuid.New().String()
 
 	testTable := []struct {
 		name           string
 		inputData      *pb.CreateUserRequest
 		convertData    *models.User
+		requestContext context.Context
 		expectedResult *pb.UserResponse
 		mockBehavior   mockBehavior
 		expectedError  bool
@@ -43,6 +45,7 @@ func TestCreateUser(t *testing.T) {
 				Password: "test",
 				Admin:    false,
 			},
+			requestContext: ctx,
 			expectedResult: &pb.UserResponse{
 				User: &pb.User{
 					Id:       newUUID,
@@ -77,10 +80,29 @@ func TestCreateUser(t *testing.T) {
 				Password: "test",
 				Admin:    false,
 			},
+			requestContext: ctx,
 			mockBehavior: func(s *serviceMocks.MockServiceInterface, dto *models.User) {
 				s.EXPECT().CreateUser(ctx, dto).Return(nil, errors.New("service error"))
 			},
 			expectedError: true,
+		},
+		{
+			name: "not admin request",
+			inputData: &pb.CreateUserRequest{
+				Email:    "test&gmail.com",
+				Username: "testUserName",
+				Password: "test",
+				Admin:    false,
+			},
+			convertData: &models.User{
+				Email:    "test&gmail.com",
+				UserName: "testUserName",
+				Password: "test",
+				Admin:    false,
+			},
+			requestContext: notAdminCtx,
+			mockBehavior:   func(s *serviceMocks.MockServiceInterface, dto *models.User) {},
+			expectedError:  true,
 		},
 	}
 
@@ -92,7 +114,7 @@ func TestCreateUser(t *testing.T) {
 			testCase.mockBehavior(service, testCase.convertData)
 			server := NewServer(service, logg)
 
-			response, err := server.CreateUser(ctx, testCase.inputData)
+			response, err := server.CreateUser(testCase.requestContext, testCase.inputData)
 			if testCase.expectedError {
 				require.Error(t, err)
 			} else {
@@ -107,7 +129,7 @@ func TestUpdateUser(t *testing.T) {
 	type mockBehavior func(s *serviceMocks.MockServiceInterface, dto models.UpdateUserDTO, id string)
 	logg, err := logger.GetLogger("INFO")
 	require.NoError(t, err)
-	ctx := context.Background()
+	ctx := context.WithValue(context.Background(), contextValue("isAdmin"), true)
 	email := "test@gmail.com"
 
 	testTable := []struct {
@@ -309,7 +331,7 @@ func TestDeleteUser(t *testing.T) {
 	type mockBehavior func(s *serviceMocks.MockServiceInterface, id string)
 	logg, err := logger.GetLogger("INFO")
 	require.NoError(t, err)
-	ctx := context.Background()
+	ctx := context.WithValue(context.Background(), contextValue("isAdmin"), true)
 	newUUID := uuid.New().String()
 
 	testTable := []struct {

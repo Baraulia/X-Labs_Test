@@ -27,7 +27,6 @@ message ChangeUserRequest {
   string email = 2;
   string username = 3;
   string password = 4;
-  bool admin = 5;
 }
 
 message CreateUserRequest {
@@ -38,8 +37,8 @@ message CreateUserRequest {
 }
 
 message GetUsersRequest {
-  int32 offset = 1;
-  int32 limit = 2;
+  uint32 offset = 1;
+  uint32 limit = 2;
 }
 
 message GetUserByIdRequest {

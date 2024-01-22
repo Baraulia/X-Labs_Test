@@ -5,7 +5,7 @@ build:
 	go build -v -o $(BIN) ./cmd
 
 run: build
-	$(BIN) -config ./configs/config.yaml
+	$(BIN) -config ./configs/config.yaml -admin_name admin -admin_password admin
 
 docker-build:
 	docker build \
